@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuarkdownJS REPL</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: #1e1e2e;
+      color: #cdd6f4;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #cba6f7;
+      white-space: nowrap;
+    }
+
+    header .controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    select, button {
+      background: #313244;
+      color: #cdd6f4;
+      border: 1px solid #45475a;
+      border-radius: 4px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    select:hover, button:hover { background: #45475a; }
+
+    label { font-size: 0.85rem; color: #a6adc8; display: flex; align-items: center; gap: 0.4rem; }
+
+    .main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    @media (max-width: 767px) {
+      .main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    }
+
+    .pane {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-right: 1px solid #313244;
+    }
+
+    .pane:last-child { border-right: none; }
+
+    .pane-label {
+      padding: 0.3rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6c7086;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      flex-shrink: 0;
+    }
+
+    #editor-container {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    /* CodeMirror overrides */
+    .cm-editor {
+      height: 100%;
+      font-size: 13px;
+    }
+    .cm-scroller { overflow: auto; }
+
+    iframe {
+      flex: 1;
+      border: none;
+      background: #fff;
+      width: 100%;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.3rem 1rem;
+      background: #181825;
+      border-top: 1px solid #313244;
+      font-size: 0.8rem;
+      color: #6c7086;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    #diag-summary { flex: 1; }
+    #diag-summary.has-errors { color: #f38ba8; }
+    #diag-summary.has-warnings { color: #f9e2af; }
+    #diag-summary.ok { color: #a6e3a1; }
+
+    #diag-detail {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      left: 1rem;
+      right: 1rem;
+      background: #181825;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      padding: 0.75rem;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+
+    #diag-detail.visible { display: block; }
+    #diag-detail .error { color: #f38ba8; }
+    #diag-detail .warning { color: #f9e2af; }
+
+    #compile-btn {
+      background: #cba6f7;
+      color: #1e1e2e;
+      border-color: #cba6f7;
+      font-weight: 600;
+    }
+    #compile-btn:hover { background: #b4befe; border-color: #b4befe; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      background: #a6e3a1;
+    }
+    .status-dot.compiling { background: #f9e2af; animation: pulse 0.8s infinite; }
+    .status-dot.error { background: #f38ba8; }
+
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.4 } }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>QuarkdownJS REPL</h1>
+  <div class="controls">
+    <label>
+      Theme:
+      <select id="theme-select">
+        <option value="default">Default</option>
+        <option value="paperwhite" selected>Paperwhite</option>
+        <option value="galactic">Galactic</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" id="auto-compile" checked>
+      Auto-compile
+    </label>
+    <button id="compile-btn">Compile</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="pane">
+    <div class="pane-label">Source</div>
+    <div id="editor-container"></div>
+  </div>
+  <div class="pane">
+    <div class="pane-label">Output</div>
+    <iframe id="output" title="Compiled output" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
+<footer>
+  <span class="status-dot" id="status-dot"></span>
+  <span id="diag-summary" class="ok">Ready</span>
+  <span style="color:#45475a">|</span>
+  <span id="char-count">0 chars</span>
+  <span style="color:#45475a">|</span>
+  <a href="#" id="share-link" style="color:#89dceb;text-decoration:none" title="Copy share link">Share</a>
+  <div id="diag-detail"></div>
+</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "codemirror": "https://esm.sh/codemirror@6.0.1",
+    "@codemirror/view": "https://esm.sh/@codemirror/view@6",
+    "@codemirror/state": "https://esm.sh/@codemirror/state@6",
+    "@codemirror/lang-markdown": "https://esm.sh/@codemirror/lang-markdown@6",
+    "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6",
+    "@codemirror/basic-setup": "https://esm.sh/@codemirror/basic-setup@0.7"
+  }
+}
+</script>
+
+<script type="module">
+// -- Load QuarkdownJS from the local build ---------------------------------
+import { compile, defaultPlugins } from './quarkdown-js.esm.js'
+
+// -- Load CodeMirror -------------------------------------------------------
+import { EditorView, basicSetup } from 'codemirror'
+import { EditorState } from '@codemirror/state'
+import { markdown } from '@codemirror/lang-markdown'
+import { oneDark } from '@codemirror/theme-one-dark'
+
+// -- Default source (mock document) ----------------------------------------
+const DEFAULT_SOURCE = `.doctype {plain}
+.docname {QuarkdownJS Test Document}
+.author {Test Suite}
+.lang {en}
+.theme {paperwhite}
+
+# Variables & Types
+
+.var {project} {QuarkdownJS}
+.var {version} {0.1.0}
+.var {beta} {true}
+
+Project: **.project** v**.version** — beta: **.beta**
+
+# Custom Functions
+
+.function {greet}
+    name:
+    title?:
+    Hello, {.title::otherwise {Dr.}} **.name**!
+
+.greet {World}
+.greet name:{Alice} title:{Prof.}
+
+# Conditionals
+
+.if {.beta}
+    This is a **beta** release.
+
+.ifnot {.beta}
+    Stable release.
+
+# Loops
+
+.foreach {1..4}
+    n:
+    - Item .n
+
+.repeat {3}
+    Row .1
+
+# Chaining
+
+.var {title} {  hello world  }
+Trimmed & uppercased: **.title::trim::uppercase**
+
+# Math
+
+.var {r} {8}
+Circle area (r=.r): **.pow {.r} to:{2}::multiply {.pi}::truncate {2}**
+
+# Layout
+
+.center
+    **Centered content**
+
+.alert type:{info}
+    This is an informational alert.
+
+.collapsible {Click to expand}
+    Hidden content revealed on click.
+
+# Operators
+
+Equals: {.equals {foo} {foo}}
+Not: {.not {false}}
+Otherwise: {.otherwise {none} {fallback}}
+
+# Text Utilities
+
+Upper: {.uppercase {hello}}
+Length: {.length {Quarkdown}}
+Concat: {.concat {foo} {bar}}`
+
+// -- State -----------------------------------------------------------------
+const iframe = document.getElementById('output')
+const diagSummary = document.getElementById('diag-summary')
+const diagDetail = document.getElementById('diag-detail')
+const statusDot = document.getElementById('status-dot')
+const charCount = document.getElementById('char-count')
+const themeSelect = document.getElementById('theme-select')
+const autoCompile = document.getElementById('auto-compile')
+const compileBtn = document.getElementById('compile-btn')
+const shareLink = document.getElementById('share-link')
+
+let debounceTimer = null
+let diagVisible = false
+
+// -- Restore source from hash ----------------------------------------------
+function getInitialSource() {
+  try {
+    const hash = location.hash.slice(1)
+    if (hash) return decodeURIComponent(atob(hash))
+  } catch {}
+  return DEFAULT_SOURCE
+}
+
+// -- Editor setup ----------------------------------------------------------
+const view = new EditorView({
+  state: EditorState.create({
+    doc: getInitialSource(),
+    extensions: [
+      basicSetup,
+      markdown(),
+      oneDark,
+      EditorView.updateListener.of(update => {
+        if (!update.docChanged) return
+        const src = view.state.doc.toString()
+        charCount.textContent = `${src.length} chars`
+        if (autoCompile.checked) {
+          clearTimeout(debounceTimer)
+          debounceTimer = setTimeout(() => runCompile(src), 300)
+        }
+      }),
+    ],
+  }),
+  parent: document.getElementById('editor-container'),
+})
+
+// -- Compile ---------------------------------------------------------------
+async function runCompile(source) {
+  statusDot.className = 'status-dot compiling'
+  diagSummary.textContent = 'Compiling...'
+  diagSummary.className = ''
+
+  try {
+    const selectedTheme = themeSelect.value
+    const result = await compile(source, {
+      plugins: defaultPlugins,
+      theme: selectedTheme,
+    })
+
+    // Update iframe
+    iframe.srcdoc = wrapOutput(result.html)
+
+    // Update hash
+    try {
+      location.hash = btoa(encodeURIComponent(source))
+    } catch {}
+
+    // Update diagnostics
+    const errors = result.diagnostics.filter(d => d.severity === 'error')
+    const warnings = result.diagnostics.filter(d => d.severity === 'warning')
+
+    if (errors.length > 0) {
+      statusDot.className = 'status-dot error'
+      diagSummary.textContent = `${errors.length} error(s), ${warnings.length} warning(s)`
+      diagSummary.className = 'has-errors'
+    } else if (warnings.length > 0) {
+      statusDot.className = 'status-dot'
+      diagSummary.textContent = `${warnings.length} warning(s)`
+      diagSummary.className = 'has-warnings'
+    } else {
+      statusDot.className = 'status-dot'
+      diagSummary.textContent = 'OK - no diagnostics'
+      diagSummary.className = 'ok'
+    }
+
+    if (result.diagnostics.length > 0) {
+      diagDetail.innerHTML = result.diagnostics
+        .map(d => `<div class="${d.severity}">[${d.severity}] ${escHtml(d.message)}</div>`)
+        .join('')
+    } else {
+      diagDetail.innerHTML = ''
+    }
+
+  } catch (err) {
+    statusDot.className = 'status-dot error'
+    diagSummary.textContent = `Compiler error: ${err.message}`
+    diagSummary.className = 'has-errors'
+    diagDetail.innerHTML = `<div class="error">${escHtml(String(err))}</div>`
+  }
+}
+
+function wrapOutput(html) {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${html}</body></html>`
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+// -- Event listeners -------------------------------------------------------
+compileBtn.addEventListener('click', () => {
+  runCompile(view.state.doc.toString())
+})
+
+themeSelect.addEventListener('change', () => {
+  runCompile(view.state.doc.toString())
+})
+
+diagSummary.addEventListener('click', () => {
+  diagVisible = !diagVisible
+  diagDetail.classList.toggle('visible', diagVisible)
+})
+
+shareLink.addEventListener('click', e => {
+  e.preventDefault()
+  navigator.clipboard?.writeText(location.href).then(() => {
+    shareLink.textContent = 'Copied!'
+    setTimeout(() => { shareLink.textContent = 'Share' }, 2000)
+  })
+})
+
+// -- Initial compile -------------------------------------------------------
+const initialSource = view.state.doc.toString()
+charCount.textContent = `${initialSource.length} chars`
+runCompile(initialSource)
+</script>
+
+</body>
+</html>

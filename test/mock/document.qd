@@ -1,0 +1,76 @@
+.doctype {plain}
+.docname {QuarkdownJS Test Document}
+.author {Test Suite}
+.lang {en}
+.theme {paperwhite}
+
+# Variables & Types
+
+.var {project} {QuarkdownJS}
+.var {version} {0.1.0}
+.var {beta} {true}
+
+Project: **.project** v**.version** — beta: **.beta**
+
+# Custom Functions
+
+.function {greet}
+    name:
+    title?:
+    Hello, {.title::otherwise {Dr.}} **.name**!
+
+.greet {World}
+
+.greet name:{Alice} title:{Prof.}
+
+# Conditionals
+
+.if {.beta}
+    This is a **beta** release.
+
+.ifnot {.beta}
+    Stable release.
+
+# Loops
+
+.foreach {1..4}
+    n:
+    - Item .n
+
+.repeat {3}
+    Row .1
+
+# Chaining
+
+.var {title} {  hello world  }
+
+Trimmed & uppercased: **.title::trim::uppercase**
+
+# Math
+
+.var {r} {8}
+
+Circle area (r=.r): **.pow {.r} to:{2}::multiply {.pi}::truncate {2}**
+
+# Layout
+
+.center
+    **Centered content**
+
+.alert type:{info}
+    This is an informational alert.
+
+.collapsible {Click to expand}
+    Hidden content revealed on click.
+
+# Operators
+
+Equals: {.equals {foo} {foo}}
+Not: {.not {false}}
+Otherwise: {.otherwise {none} {fallback}}
+
+# Text Utilities
+
+Upper: {.uppercase {hello}}
+Length: {.length {Quarkdown}}
+Concat: {.concat {foo} {bar}}
