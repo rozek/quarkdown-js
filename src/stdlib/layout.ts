@@ -14,16 +14,11 @@ function markdownNodes(val: QdValue): any[] {
 }
 
 function getNamedArg(args: QdRawArg[], name: string): QdRawArg | undefined {
-  // Named args carry their name in a property attached by the pipeline;
-  // we access it via the QdArgument shape which has already been stripped to QdRawArg here.
-  // The registry passes QdRawArg[] (values only), so named arg detection must come
-  // from the QdArgument level. However the builtin fn signature receives QdRawArg[].
-  // We access the name property defensively.
-  return (args as any[]).find((a: any) => a.name === name)
+  return (args as any[]).find((a: any) => a._name === name)
 }
 
 function positionalArgs(args: QdRawArg[]): QdRawArg[] {
-  return (args as any[]).filter((a: any) => !a.name)
+  return (args as any[]).filter((a: any) => !a._name)
 }
 
 export const layoutFunctions: Record<string, (args: QdRawArg[], ctx: Context) => Promise<QdValue>> = {

@@ -459,8 +459,14 @@ async function expandFunctionCall(node: QdFunctionCallNode, ctx: Context): Promi
     }
 
     case 'builtin': {
-      // Extract raw args from QdArgument[]
-      const rawArgs: QdRawArg[] = node.args.map((a: QdArgument) => a.value)
+      // Build QdRawArg[] with _name attached to named args so getNamedArg() /
+      // positionalArgs() can distinguish them, while positional destructuring
+      // ([a, b]) and evalArg() still work normally (tag is preserved).
+      const rawArgs: QdRawArg[] = node.args.map((a: QdArgument) => {
+        const raw: any = { ...a.value }
+        if (a.name) raw._name = a.name
+        return raw as QdRawArg
+      })
       const val = await callable.fn(rawArgs, ctx)
       const nodes = valueToNodes(val)
       // Special handling for include: it can return multiple nodes

@@ -7,11 +7,11 @@ function layoutNode(layoutType: string, attrs: Record<string, string> = {}, chil
 }
 
 function getNamedArg(args: QdRawArg[], name: string): QdRawArg | undefined {
-  return (args as any[]).find((a: any) => a.name === name)
+  return (args as any[]).find((a: any) => a._name === name)
 }
 
 function positionalArgs(args: QdRawArg[]): QdRawArg[] {
-  return (args as any[]).filter((a: any) => !a.name)
+  return (args as any[]).filter((a: any) => !a._name)
 }
 
 export const documentFunctions: Record<string, (args: QdRawArg[], ctx: Context) => Promise<QdValue>> = {
