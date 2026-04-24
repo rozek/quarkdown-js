@@ -6,7 +6,7 @@ A browser-native ECMAScript module that compiles [Quarkdown](https://quarkdown.c
 
 ## Live Demo
 
-**[Try the REPL ->](https://rozek.github.io/quarkdown-js/)**
+**[Try the REPL ->](https://rozek.github.io/quarkdown-js/demo/)**
 
 ## Quick Start
 
