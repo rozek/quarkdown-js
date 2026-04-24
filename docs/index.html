@@ -215,12 +215,20 @@
 <script type="importmap">
 {
   "imports": {
-    "codemirror": "https://esm.sh/codemirror@6.0.1",
-    "@codemirror/view": "https://esm.sh/@codemirror/view@6",
-    "@codemirror/state": "https://esm.sh/@codemirror/state@6",
-    "@codemirror/lang-markdown": "https://esm.sh/@codemirror/lang-markdown@6",
-    "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6",
-    "@codemirror/basic-setup": "https://esm.sh/@codemirror/basic-setup@0.7"
+    "codemirror": "https://esm.sh/codemirror@6.0.2",
+    "@codemirror/view": "https://esm.sh/@codemirror/view@6.41.1",
+    "@codemirror/state": "https://esm.sh/@codemirror/state@6.6.0",
+    "@codemirror/lang-markdown": "https://esm.sh/@codemirror/lang-markdown@6.5.0",
+    "@codemirror/theme-one-dark": "https://esm.sh/@codemirror/theme-one-dark@6.1.3",
+    "@lezer/common": "https://esm.sh/@lezer/common@1",
+    "@lezer/highlight": "https://esm.sh/@lezer/highlight@1",
+    "@lezer/lr": "https://esm.sh/@lezer/lr@1",
+    "@lezer/markdown": "https://esm.sh/@lezer/markdown@1",
+    "@codemirror/autocomplete": "https://esm.sh/@codemirror/autocomplete@6",
+    "@codemirror/commands": "https://esm.sh/@codemirror/commands@6",
+    "@codemirror/language": "https://esm.sh/@codemirror/language@6",
+    "@codemirror/lint": "https://esm.sh/@codemirror/lint@6",
+    "@codemirror/search": "https://esm.sh/@codemirror/search@6"
   }
 }
 </script>
@@ -240,7 +248,6 @@ const DEFAULT_SOURCE = `.doctype {plain}
 .docname {QuarkdownJS Test Document}
 .author {Test Suite}
 .lang {en}
-.theme {paperwhite}
 
 # Variables & Types
 
@@ -280,11 +287,13 @@ Project: **.project** v**.version** — beta: **.beta**
 # Chaining
 
 .var {title} {  hello world  }
+
 Trimmed & uppercased: **.title::trim::uppercase**
 
 # Math
 
 .var {r} {8}
+
 Circle area (r=.r): **.pow {.r} to:{2}::multiply {.pi}::truncate {2}**
 
 # Layout
