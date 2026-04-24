@@ -4,6 +4,10 @@ A browser-native ECMAScript module that compiles [Quarkdown](https://quarkdown.c
 
 > **Clean-room implementation** based on the public Quarkdown documentation and wiki. Licensed under MIT.
 
+## Live Demo
+
+**[Try the REPL ->](https://rozek.github.io/quarkdown-js/)**
+
 ## Quick Start
 
 ```typescript
@@ -82,10 +86,6 @@ import {
   citationsPlugin,  // Citation management (stub)
 } from 'quarkdown-js'
 ```
-
-## Live Demo
-
-**[Try the REPL ->](https://rozek.github.io/quarkdown-js/)**
 
 ## Quarkdown Language
 
