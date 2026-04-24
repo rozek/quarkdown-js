@@ -5,7 +5,7 @@ export default defineConfig(({ command }) => {
     // Dev server: serve demo as a regular app (no library mode)
     return {
       root: '.',
-      server: { open: '/demo/index.html' },
+      server: { open: '/dev/index.html' },
     }
   }
 
