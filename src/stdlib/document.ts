@@ -70,10 +70,15 @@ export const documentFunctions: Record<string, (args: QdRawArg[], ctx: Context) 
     const caption = captionArg ? String((await evalArg(captionArg, ctx) as any).value ?? '') : ''
     const body = bodyArg ? await evalArg(bodyArg, ctx) : { kind: 'string' as const, value: '' }
     // body may be a string (from .read) or markdown; extract text value
+    function extractText(nodes: any[]): string {
+      return nodes.map(n => {
+        if (typeof n.value === 'string') return n.value
+        return extractText(n.children ?? [])
+      }).join('')
+    }
     const code = (body as any).kind === 'string' ? (body as any).value :
       (body as any).kind === 'none' ? '' :
-      // markdown: extract concatenated text from nodes
-      ((body as any).nodes ?? []).map((n: any) => n.value ?? '').join('')
+      extractText((body as any).nodes ?? [])
     return { kind: 'markdown', nodes: [{ type: 'code', lang, value: code, data: { lineNumbers, focus, caption } }] }
   },
 

@@ -21,3 +21,8 @@
 
 .code lang:{java} linenumbers:{no}
     .read {code/Wrapper.java}
+
+#### Inline body
+
+.code lang:{java} linenumbers:{no}
+    System.out.println("Hello, World!");
