@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="Quarkdown">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="quarkdown:root-path" content=".">
+    <title>Quarkdown</title>
+    <script src="./script/quarkdown.min.js"></script>
+    <script>const capabilities = window.quarkdownCapabilities</script>
+    <script>window.texMacros = {}</script>
+    <link href="./lib/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="./lib/mermaid/mermaid.min.js"></script>
+    <script>capabilities.mermaid = true;</script>
+    <link href="./theme/theme.css" rel="stylesheet">
+    <style>
+
+</style>
+    <script>prepare(new PlainDocument());</script>
+<template id="sidebar-template"><nav class="sidebar" role="doc-toc"><ol><li data-target-id="mermaid" data-depth="1"><a href="#mermaid">Mermaid</a><ol><li data-target-id="xy-chart" data-depth="2"><a href="#xy-chart">XY Chart</a></li><li data-target-id="class-diagram" data-depth="2"><a href="#class-diagram">Class Diagram</a></li><li data-target-id="sequence-diagram" data-depth="2"><a href="#sequence-diagram">Sequence Diagram</a></li><li data-target-id="flowchart" data-depth="2"><a href="#flowchart">Flowchart</a></li><li data-target-id="git-graph" data-depth="2"><a href="#git-graph">Git Graph</a></li><li data-target-id="pie-chart" data-depth="2"><a href="#pie-chart">Pie Chart</a></li></ol></li></ol></nav>
+</template>  </head>
+  <body class="quarkdown quarkdown-plain">
+    <aside class="margin-area" id="margin-area-left"></aside>
+    <main><h1 class="page-break" id="mermaid">Mermaid</h1><h2 id="xy-chart">XY Chart</h2><p>100</p><div class="box error"><header><h4>Error: xychart</h4></header><div class="box-content"><p>Cannot call function xychart<span class="inline-collapse" data-full-text="(optional Boolean lines, optional Boolean bars, optional String x, optional Range xrange, optional Iterable xtags, optional String y, optional Range yrange, optional InlineMarkdownContent caption, optional String ref, Iterable values)" data-collapsed-text="(...)" data-collapsed="true">(...)</span> with arguments <span class="inline-collapse" data-full-text="(.repeat {.n}
+    .1::pow {2}::divide {100}
+.repeat {.n}
+    .1::logn::multiply {10})" data-collapsed-text="(...)" data-collapsed="true">(...)</span>: <br /><em>Unresolved reference: n</em></p><pre><code class="no-highlight nohljsln">.xychart
+    .repeat {.n}
+        .1::pow {2}::divide {100}
+    .repeat {.n}
+        .1::logn::multiply {10}</code></pre></div></div><h2 id="class-diagram">Class Diagram</h2><figure><pre class="mermaid">classDiagram
+    class Bank {
+        +name: string
+        +address: string
+    }
+
+    class Customer {
+        +name: string
+        +id: int
+    }
+
+    class BankAccount {
+        &lt;&lt;interface&gt;&gt;
+        +id: int
+        +balance: double
+        +deposit(amount: double)
+        +withdraw(amount: double)
+    }
+
+    class Transaction {
+        +amount: double
+        +date: date
+        +execute()
+    }
+
+    class Loan {
+        +id: int
+        +amount: double
+        +interestRate: double
+        +approve()
+    }
+
+Bank &quot;1&quot; o-- &quot;*&quot; Customer : manages
+Customer &quot;1&quot; --&gt; &quot;*&quot; BankAccount : owns
+Customer &quot;1&quot; --&gt; &quot;*&quot; Loan : has
+BankAccount &quot;1&quot; --&gt; &quot;*&quot; Transaction : records
+</pre><figcaption class="caption-bottom">Class diagram of a bank system</figcaption></figure><h2 id="sequence-diagram">Sequence Diagram</h2><figure><pre class="mermaid">sequenceDiagram
+    Alice -&gt;&gt; Bob: Hello Bob, how are you?
+    alt sick
+        Bob -&gt;&gt; Alice: Not so good :(
+    else well
+        Bob -&gt;&gt; Alice: Feeling fresh like a daisy.
+    end
+
+    opt
+        Bob -&gt;&gt; Alice: Thanks for asking!
+    end
+</pre><figcaption class="caption-bottom">Sequence diagram of a communication</figcaption></figure><h2 id="flowchart">Flowchart</h2><figure><pre class="mermaid">flowchart TD
+    A([Start]) --&gt; B[Enter username and password]
+    B --&gt; C{Correct?}
+    C -- Yes --&gt; D[Redirect to dashboard]
+    C -- No --&gt; E[Show error message]
+    D --&gt; F([END])
+    E --&gt; F
+</pre><figcaption class="caption-bottom">Flowchart of the dashboard</figcaption></figure><h2 id="git-graph">Git Graph</h2><figure><pre class="mermaid">gitGraph:
+    commit &quot;Ashish&quot;
+    branch newbranch
+    checkout newbranch
+    commit id:&quot;1111&quot;
+    commit tag:&quot;test&quot;
+    checkout main
+    commit type: HIGHLIGHT
+    commit
+    merge newbranch
+    commit
+    branch b2
+    commit
+</pre><figcaption class="caption-bottom">Graph of a Git repository</figcaption></figure><h2 id="pie-chart">Pie Chart</h2><figure><pre class="mermaid">pie showData
+    &quot;Sleep&quot; : 8
+    &quot;Work&quot; : 9
+    &quot;Exercise&quot; : 1
+    &quot;Leisure&quot; : 4
+    &quot;Meals&quot; : 2
+</pre><figcaption class="caption-bottom">Pie chart of a daily routine</figcaption></figure></main>
+    <aside class="margin-area" id="margin-area-right"></aside>
+  </body>
+</html>

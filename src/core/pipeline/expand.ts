@@ -316,7 +316,7 @@ export async function expand(root: Root, ctx: Context): Promise<Root> {
 // Core recursive expander
 // ---------------------------------------------------------------------------
 
-async function expandNode(node: any, ctx: Context): Promise<any | null> {
+export async function expandNode(node: any, ctx: Context): Promise<any | null> {
   switch (node.type) {
     case 'qdMetadata':    return expandMetadata(node as QdMetadataNode, ctx)
     case 'qdVariableDef': return expandVariableDef(node as QdVariableDefNode, ctx)
@@ -334,6 +334,36 @@ async function expandNode(node: any, ctx: Context): Promise<any | null> {
       // Expand any inline calls embedded in text values (e.g., "Item .n")
       return expandTextNode(node.value ?? '', ctx)
     }
+    case 'paragraph': {
+      // Detect <<< page break
+      const paraText = getParagraphText(node)
+      if (paraText.trim() === '<<<') {
+        return {
+          type: 'qdLayout',
+          layoutType: 'qdPageBreak',
+          attrs: {},
+          children: [],
+        }
+      }
+      // Default: recurse into children
+      const newChildren: any[] = []
+      for (const child of node.children) {
+        const result = await expandNode(child, ctx)
+        if (Array.isArray(result)) newChildren.push(...result)
+        else if (result !== null && result !== undefined) newChildren.push(result)
+      }
+      return { ...node, children: newChildren }
+    }
+    case 'blockquote': {
+      // First expand children recursively
+      const expandedChildren: any[] = []
+      for (const child of (node.children ?? [])) {
+        const result = await expandNode(child, ctx)
+        if (Array.isArray(result)) expandedChildren.push(...result)
+        else if (result !== null && result !== undefined) expandedChildren.push(result)
+      }
+      return transformBlockquote({ ...node, children: expandedChildren })
+    }
     default: {
       // Recursively expand children
       if (node.children) {
@@ -348,6 +378,100 @@ async function expandNode(node: any, ctx: Context): Promise<any | null> {
       return node
     }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Quarkdown-specific blockquote transformations
+// ---------------------------------------------------------------------------
+
+/** GFM alert keyword prefixes and their CSS class names */
+const GFM_ALERT_KEYWORDS: Record<string, string> = {
+  'Tip':       'tip',
+  'Note':      'note',
+  'Warning':   'warning',
+  'Important': 'important',
+  'Caution':   'caution',
+}
+
+/** Extract plain text content from a paragraph node */
+function getParagraphText(para: any): string {
+  if (!para || para.type !== 'paragraph') return ''
+  return (para.children ?? [])
+    .filter((c: any) => c.type === 'text' || c.type === 'inlineCode')
+    .map((c: any) => c.value ?? '')
+    .join('')
+}
+
+/**
+ * Transform a blockquote node after its children have been expanded:
+ * 1. Detect GFM alert prefix (e.g. "Tip: ") in the first paragraph → add data-alert-type
+ * 2. Convert trailing list items to attribution paragraphs
+ */
+function transformBlockquote(node: any): any {
+  const children: any[] = node.children ?? []
+  if (children.length === 0) return node
+
+  // --- GFM alert detection ---
+  // Look at the first paragraph's first text child
+  const firstChild = children[0]
+  let alertType: string | null = null
+
+  if (firstChild?.type === 'paragraph') {
+    const paraChildren: any[] = firstChild.children ?? []
+    if (paraChildren.length > 0 && paraChildren[0].type === 'text') {
+      const textValue: string = paraChildren[0].value ?? ''
+      for (const keyword of Object.keys(GFM_ALERT_KEYWORDS)) {
+        if (textValue.startsWith(keyword + ': ') || textValue.startsWith(keyword + ':\n')) {
+          alertType = GFM_ALERT_KEYWORDS[keyword]
+          // Strip the keyword prefix from the text node
+          const stripped = textValue.slice(keyword.length + 2)
+          const newParaChildren = [
+            { ...paraChildren[0], value: stripped },
+            ...paraChildren.slice(1),
+          ]
+          children[0] = { ...firstChild, children: newParaChildren }
+          break
+        }
+      }
+    }
+  }
+
+  // --- Attribution line detection ---
+  // The last child of a blockquote may be a list with a single item
+  // representing the attribution line (e.g. "- Bob Ross").
+  // Convert such list items to <p class="attribution"> paragraphs.
+  const transformedChildren: any[] = []
+  for (const child of children) {
+    if (
+      child.type === 'list' &&
+      !child.ordered &&
+      Array.isArray(child.children) &&
+      child.children.length === 1
+    ) {
+      const listItem = child.children[0]
+      // A list item used as attribution has paragraph children or inline children
+      const itemChildren: any[] = listItem.children ?? []
+      // Flatten: if item contains a single paragraph, use its children as attribution content
+      let attrChildren: any[]
+      if (itemChildren.length === 1 && itemChildren[0].type === 'paragraph') {
+        attrChildren = itemChildren[0].children ?? []
+      } else {
+        attrChildren = itemChildren
+      }
+      transformedChildren.push({
+        type: 'qdAttribution',
+        children: attrChildren,
+      })
+    } else {
+      transformedChildren.push(child)
+    }
+  }
+
+  const result: any = { ...node, children: transformedChildren }
+  if (alertType) {
+    result.data = { ...result.data, alertType }
+  }
+  return result
 }
 
 // ---------------------------------------------------------------------------

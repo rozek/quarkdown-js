@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="Quarkdown">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="quarkdown:root-path" content=".">
+    <title>Quarkdown</title>
+    <script src="./script/quarkdown.min.js"></script>
+    <script>const capabilities = window.quarkdownCapabilities</script>
+    <script>window.texMacros = {}</script>
+    <link href="./lib/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="./lib/highlight.js/highlightjs.min.js"></script>
+    <script src="./lib/highlightjs-line-numbers/highlightjs-line-numbers.min.js"></script>
+    <script src="./lib/highlightjs-copy/highlightjs-copy.min.js"></script>
+    <link href="./lib/highlightjs-copy/highlightjs-copy.min.css" rel="stylesheet">
+    <script>capabilities.code = true;</script>
+    <link href="./theme/theme.css" rel="stylesheet">
+    <style>
+
+</style>
+    <script>prepare(new PlainDocument());</script>
+<template id="sidebar-template"><nav class="sidebar" role="doc-toc"><ol><li data-target-id="code" data-depth="1"><a href="#code">Code</a></li></ol></nav>
+</template>  </head>
+  <body class="quarkdown quarkdown-plain">
+    <aside class="margin-area" id="margin-area-left"></aside>
+    <main><h1 class="page-break" id="code">Code</h1><h4 id="default">Default</h4><pre><code class="language-java">public final class Wrapper&lt;T&gt; {
+    private final T value;
+
+    public Wrapper(T value) {
+        this.value = value;
+    }
+
+    public final T getValue() {
+        return this.value;
+    }
+}
+</code></pre><h4 id="with-caption">With caption</h4><figure><pre><code class="language-java">public final class Wrapper&lt;T&gt; {
+    private final T value;
+
+    public Wrapper(T value) {
+        this.value = value;
+    }
+
+    public final T getValue() {
+        return this.value;
+    }
+}
+</code></pre><figcaption class="caption-bottom">A wrapper class</figcaption></figure><div class="page-break" data-hidden=""></div><h4 id="focused">Focused</h4><pre><code class="language-java focus-lines" data-focus-start="4" data-focus-end="6">public final class Wrapper&lt;T&gt; {
+    private final T value;
+
+    public Wrapper(T value) {
+        this.value = value;
+    }
+
+    public final T getValue() {
+        return this.value;
+    }
+}
+</code></pre><h4 id="without-line-numbers">Without line numbers</h4><pre><code class="language-java nohljsln">public final class Wrapper&lt;T&gt; {
+    private final T value;
+
+    public Wrapper(T value) {
+        this.value = value;
+    }
+
+    public final T getValue() {
+        return this.value;
+    }
+}
+</code></pre></main>
+    <aside class="margin-area" id="margin-area-right"></aside>
+  </body>
+</html>
+

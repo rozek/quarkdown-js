@@ -19,6 +19,8 @@ export interface Context {
   readonly fetch: (path: string) => Promise<string>
   readonly plugins: Plugin[]
   readonly baseUrl: string
+  /** When true, render bare HTML without the CSS wrapper and document wrapper div */
+  readonly nowrap: boolean
   addDiagnostic(d: Diagnostic): void
 }
 
@@ -32,6 +34,7 @@ class ContextImpl implements Context {
     private readonly _fetch: (path: string) => Promise<string>,
     private readonly _plugins: Plugin[],
     private readonly _baseUrl: string,
+    private readonly _nowrap: boolean = false,
     parent: ContextImpl | null = null,
     initialBindings: Record<string, QdCallable> = {}
   ) {
@@ -50,7 +53,7 @@ class ContextImpl implements Context {
   fork(bindings: Record<string, QdCallable> = {}): Context {
     return new ContextImpl(
       this._metadata, this._diagnostics, this._fetch,
-      this._plugins, this._baseUrl, this, bindings
+      this._plugins, this._baseUrl, this._nowrap, this, bindings
     )
   }
 
@@ -59,6 +62,7 @@ class ContextImpl implements Context {
   get fetch() { return this._fetch }
   get plugins() { return this._plugins }
   get baseUrl() { return this._baseUrl }
+  get nowrap() { return this._nowrap }
 
   addDiagnostic(d: Diagnostic): void {
     this._diagnostics.push(d)
@@ -70,8 +74,8 @@ export function createContext(options: CompileOptions = {}): Context {
   if (options.theme) metadata.theme = options.theme
   if (options.type)  metadata.type  = options.type
   const diagnostics: Diagnostic[] = []
-  const fetchFn = options.fetch ?? defaultFetch(options.baseUrl ?? '')
-  const ctx = new ContextImpl(metadata, diagnostics, fetchFn, options.plugins ?? [], options.baseUrl ?? '')
+  const fetchFn = options.fetch ?? (options.baseDir ? defaultFileFetch(options.baseDir) : defaultFetch(options.baseUrl ?? ''))
+  const ctx = new ContextImpl(metadata, diagnostics, fetchFn, options.plugins ?? [], options.baseUrl ?? options.baseDir ?? '', options.nowrap ?? false)
   registerStdlib(ctx)
   for (const plugin of (options.plugins ?? [])) {
     plugin.setup?.(ctx)
@@ -88,5 +92,14 @@ function defaultFetch(baseUrl: string): (path: string) => Promise<string> {
     const response = await fetch(url)
     if (!response.ok) throw new Error(`fetch failed: ${response.status} ${url}`)
     return response.text()
+  }
+}
+
+function defaultFileFetch(baseDir: string): (path: string) => Promise<string> {
+  return async (path: string) => {
+    const { readFileSync } = await import('fs')
+    const { join, isAbsolute } = await import('path')
+    const resolved = isAbsolute(path) ? path : join(baseDir, path)
+    return readFileSync(resolved, 'utf8')
   }
 }

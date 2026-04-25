@@ -54,16 +54,27 @@ export const documentFunctions: Record<string, (args: QdRawArg[], ctx: Context) 
   },
 
   code: async (args, ctx) => {
-    const langArg = getNamedArg(args, 'lang')
-    const lnArg   = getNamedArg(args, 'linenumbers')
-    const focusArg = getNamedArg(args, 'focus')
-    const bodyArg = positionalArgs(args)[0] ?? args[args.length - 1]
+    const langArg    = getNamedArg(args, 'lang')
+    const lnArg      = getNamedArg(args, 'linenumbers')
+    const focusArg   = getNamedArg(args, 'focus')
+    const captionArg = getNamedArg(args, 'caption')
+    const bodyArg    = positionalArgs(args)[0]
     const lang = langArg ? String((await evalArg(langArg, ctx) as any).value ?? '') : ''
-    const lineNumbers = lnArg ? (await evalArg(lnArg, ctx) as any).value !== false : true
-    const focus = focusArg ? String((await evalArg(focusArg, ctx) as any).value ?? '') : ''
+    const lnVal = lnArg ? (await evalArg(lnArg, ctx) as any) : null
+    const lineNumbers = lnVal === null ? true
+      : (lnVal.value === 'no' || lnVal.value === false || lnVal.value === 'false') ? false : true
+    const focusVal = focusArg ? (await evalArg(focusArg, ctx) as any) : null
+    // focusVal may be a range like { kind:'range', from:4, to:6 } or a string "4..6"
+    const focus = focusVal === null ? '' :
+      (focusVal.kind === 'range' ? `${focusVal.from}..${focusVal.to}` : String(focusVal.value ?? ''))
+    const caption = captionArg ? String((await evalArg(captionArg, ctx) as any).value ?? '') : ''
     const body = bodyArg ? await evalArg(bodyArg, ctx) : { kind: 'string' as const, value: '' }
-    const code = (body as any).value ?? ''
-    return { kind: 'markdown', nodes: [{ type: 'code', lang, value: code, data: { lineNumbers, focus } }] }
+    // body may be a string (from .read) or markdown; extract text value
+    const code = (body as any).kind === 'string' ? (body as any).value :
+      (body as any).kind === 'none' ? '' :
+      // markdown: extract concatenated text from nodes
+      ((body as any).nodes ?? []).map((n: any) => n.value ?? '').join('')
+    return { kind: 'markdown', nodes: [{ type: 'code', lang, value: code, data: { lineNumbers, focus, caption } }] }
   },
 
   codespan: async ([text], ctx) => {

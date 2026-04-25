@@ -1,0 +1,74 @@
+<style>:root {
+  --qd-color-bg: #ffffff;
+  --qd-color-text: #1a1a1a;
+  --qd-color-primary: #0066cc;
+  --qd-color-border: #e0e0e0;
+  --qd-color-surface: #f5f5f5;
+  --qd-font-body: system-ui, sans-serif;
+  --qd-font-mono: monospace;
+  --qd-font-size-base: 16px;
+  --qd-line-height: 1.6;
+  --qd-space: 1rem;
+}
+
+.qd-document { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: var(--qd-font-body); font-size: var(--qd-font-size-base); line-height: var(--qd-line-height); color: var(--qd-color-text); background: var(--qd-color-bg); }
+.qd-center { display: flex; justify-content: center; text-align: center; }
+.qd-row { display: flex; flex-direction: row; gap: var(--qd-space); align-items: flex-start; }
+.qd-column { display: flex; flex-direction: column; gap: var(--qd-space); }
+.qd-grid { display: grid; gap: var(--qd-space); grid-template-columns: repeat(var(--qd-grid-cols, 2), 1fr); }
+.qd-stack { display: flex; flex-direction: column; gap: var(--qd-space); }
+.qd-box { border: 1px solid var(--qd-color-border); border-radius: 4px; padding: var(--qd-space); background: var(--qd-color-surface); }
+.qd-alert { border-left: 4px solid; padding: 0.75rem 1rem; border-radius: 0 4px 4px 0; margin: 1rem 0; }
+.qd-alert--info { border-color: #0066cc; background: #e8f0fe; }
+.qd-alert--warning { border-color: #f59e0b; background: #fef3c7; }
+.qd-alert--error { border-color: #dc2626; background: #fee2e2; }
+.qd-alert--success { border-color: #16a34a; background: #dcfce7; }
+.qd-collapsible summary { cursor: pointer; font-weight: bold; }
+.qd-tabs { border: 1px solid var(--qd-color-border); border-radius: 4px; overflow: hidden; }
+.qd-pagebreak { page-break-after: always; break-after: page; }
+.qd-space { height: var(--qd-space); }
+.qd-figure { margin: 1.5rem auto; text-align: center; }
+.qd-toc { margin: 1.5rem 0; padding: 1rem; background: var(--qd-color-surface); border-radius: 4px; }
+.qd-toc ol { padding-left: 1.5rem; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css">
+<div class="qd-document qd-plain">
+<h1 class="page-break" id="footnotes">Footnotes</h1>
+<p>The search for planets beyond our solar system &ndash; exoplanets &ndash; has transformed modern astronomy.
+Ever since the first confirmed detection of an exoplanet orbiting a sun-like star in 1995<sup class="footnote-reference footnote-label" data-definition="__footnote-pegasi"><a href="#__footnote-pegasi">1</a></sup>, astronomers have cataloged thousands more, revealing an incredible diversity of worlds.</p>
+<p>Many exoplanets are found using the transit method, where astronomers detect a slight dip in a star&rsquo;s brightness when a planet passes in front of it<sup class="footnote-reference footnote-label" data-definition="__footnote-transit"><a href="#__footnote-transit">2</a></sup>.
+This method, popularized by missions like <em>Kepler</em>, has uncovered planets of all sizes--from Earth-like rocky worlds to gas giants larger than Jupiter.</p>
+<p>Another technique is the radial velocity method, which detects the gravitational wobble a planet induces in its host star<sup class="footnote-reference footnote-label" data-definition="__footnote-doppler"><a href="#__footnote-doppler">3</a></sup>.
+This was how the first exoplanet, 51 Pegasi b, was confirmed<sup class="footnote-reference footnote-label" data-definition="__footnote-pegasi"><a href="#__footnote-pegasi">1</a></sup>.
+Combining both transit and radial velocity data allows scientists to estimate a planet&rsquo;s density and composition.</p>
+<p>Surprisingly, many exoplanets challenge our understanding of planetary systems.
+Hot Jupiters, for example, are massive gas giants orbiting extremely close to their stars--something not seen in our own solar system<sup class="footnote-reference footnote-label" data-definition="__footnote-__anon_fn_1"><a href="#__footnote-__anon_fn_1">4</a></sup>.
+These discoveries force astronomers to refine models of planetary formation and migration<sup class="footnote-reference footnote-label" data-definition="__footnote-doppler"><a href="#__footnote-doppler">3</a></sup>.</p>
+<p>With next-generation telescopes like the James Webb Space Telescope (JWST), scientists hope to study the atmospheres of distant exoplanets in greater detail<sup class="footnote-reference footnote-label" data-definition="__footnote-transit"><a href="#__footnote-transit">2</a></sup>.
+By analyzing the starlight passing through a planet&rsquo;s atmosphere during a transit, researchers can search for signatures of water, methane, or even biosignatures--potential signs of life.</p>
+<section class="footnotes"><span class="footnote-definition" id="__footnote-pegasi">
+<p>Mayor &#x26; Queloz, 1995--discovery of <em>51 Pegasi b</em>.  </p>
+</span><span class="footnote-definition" id="__footnote-transit">
+<p>The transit method was used extensively by NASA&rsquo;s <em>Kepler</em> mission.  </p>
+</span><span class="footnote-definition" id="__footnote-doppler">
+<p>Radial velocity method measures the Doppler shift in a star&rsquo;s spectrum.  </p>
+</span><span class="footnote-definition" id="__footnote-__anon_fn_1">
+<p>Hot Jupiters are believed to have migrated inward from their original formation zone. </p>
+</span></section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+});</script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
+<script>if (typeof hljs !== 'undefined') hljs.highlightAll();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if (typeof mermaid !== 'undefined') mermaid.initialize({ startOnLoad: true });</script>

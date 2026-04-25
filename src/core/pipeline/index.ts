@@ -9,6 +9,7 @@ import { refinePlugin } from '../parser/refine.js'
 import { expand } from './expand.js'
 import { createContext } from '../context/context.js'
 import { renderHtml } from '../../renderer/html/renderer.js'
+import { preprocessInlineFootnotes } from '../parser/inline-footnotes.js'
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -22,6 +23,10 @@ export interface CompileOptions {
   fetch?: (path: string) => Promise<string>
   plugins?: Plugin[]
   baseUrl?: string
+  /** Filesystem directory to resolve relative .read/.include paths against */
+  baseDir?: string
+  /** When true, output bare HTML without the CSS <style> block or document wrapper div */
+  nowrap?: boolean
 }
 
 export interface CompileResult {
@@ -73,6 +78,10 @@ export interface ClientScript {
 export async function compile(source: string, options: CompileOptions = {}): Promise<CompileResult> {
   const ctx = createContext(options)
 
+  // Stage 0: pre-process Quarkdown-specific inline footnote syntax into
+  // standard GFM footnote syntax that remark-gfm can handle.
+  const preprocessed = preprocessInlineFootnotes(source)
+
   // Stages 1–3: parse + walk + refine
   const processor = unified()
     .use(remarkParse)
@@ -81,7 +90,7 @@ export async function compile(source: string, options: CompileOptions = {}): Pro
     .use(walkPlugin)
     .use(refinePlugin)
 
-  const parsed = processor.parse(source)
+  const parsed = processor.parse(preprocessed)
   const refined = await processor.run(parsed) as Root
 
   // Stage 4: expand (evaluates all QD nodes → standard mdast)

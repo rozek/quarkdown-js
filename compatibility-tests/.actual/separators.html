@@ -1,0 +1,60 @@
+<style>:root {
+  --qd-color-bg: #ffffff;
+  --qd-color-text: #1a1a1a;
+  --qd-color-primary: #0066cc;
+  --qd-color-border: #e0e0e0;
+  --qd-color-surface: #f5f5f5;
+  --qd-font-body: system-ui, sans-serif;
+  --qd-font-mono: monospace;
+  --qd-font-size-base: 16px;
+  --qd-line-height: 1.6;
+  --qd-space: 1rem;
+}
+
+.qd-document { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: var(--qd-font-body); font-size: var(--qd-font-size-base); line-height: var(--qd-line-height); color: var(--qd-color-text); background: var(--qd-color-bg); }
+.qd-center { display: flex; justify-content: center; text-align: center; }
+.qd-row { display: flex; flex-direction: row; gap: var(--qd-space); align-items: flex-start; }
+.qd-column { display: flex; flex-direction: column; gap: var(--qd-space); }
+.qd-grid { display: grid; gap: var(--qd-space); grid-template-columns: repeat(var(--qd-grid-cols, 2), 1fr); }
+.qd-stack { display: flex; flex-direction: column; gap: var(--qd-space); }
+.qd-box { border: 1px solid var(--qd-color-border); border-radius: 4px; padding: var(--qd-space); background: var(--qd-color-surface); }
+.qd-alert { border-left: 4px solid; padding: 0.75rem 1rem; border-radius: 0 4px 4px 0; margin: 1rem 0; }
+.qd-alert--info { border-color: #0066cc; background: #e8f0fe; }
+.qd-alert--warning { border-color: #f59e0b; background: #fef3c7; }
+.qd-alert--error { border-color: #dc2626; background: #fee2e2; }
+.qd-alert--success { border-color: #16a34a; background: #dcfce7; }
+.qd-collapsible summary { cursor: pointer; font-weight: bold; }
+.qd-tabs { border: 1px solid var(--qd-color-border); border-radius: 4px; overflow: hidden; }
+.qd-pagebreak { page-break-after: always; break-after: page; }
+.qd-space { height: var(--qd-space); }
+.qd-figure { margin: 1.5rem auto; text-align: center; }
+.qd-toc { margin: 1.5rem 0; padding: 1rem; background: var(--qd-color-surface); border-radius: 4px; }
+.qd-toc ol { padding-left: 1.5rem; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/github.min.css">
+<div class="qd-document qd-plain">
+<h1 class="page-break" id="separators">Separators</h1>
+<h4 id="horizontal">Horizontal</h4>
+<p>The quick brown fox jumps over the lazy dog.</p>
+<hr />
+<p>The quick brown fox jumps over the lazy dog.</p>
+<span>&nbsp;</span>
+<h4 id="vertical">Vertical</h4>
+<div style="justify-content: flex-start; align-items: center;" class="stack stack-row"><div></div><hr /><div></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });
+});</script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/highlight.min.js"></script>
+<script>if (typeof hljs !== 'undefined') hljs.highlightAll();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>if (typeof mermaid !== 'undefined') mermaid.initialize({ startOnLoad: true });</script>

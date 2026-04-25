@@ -18,14 +18,14 @@ describe('Math plugin', () => {
 })
 
 describe('Math plugin — rendering', () => {
-  it('renders inline math with class qd-math-inline', async () => {
-    const result = await compile('Value: $x^2$', { plugins: [mathPlugin] })
-    expect(result.html).toContain('qd-math-inline')
+  it('renders inline math as <formula> element', async () => {
+    const result = await compile('Value: $ x^2 $', { plugins: [mathPlugin] })
+    expect(result.html).toContain('<formula>x^2</formula>')
   })
 
-  it('renders block math with class qd-math-block', async () => {
-    const result = await compile('$$\nx^2\n$$', { plugins: [mathPlugin] })
-    expect(result.html).toContain('qd-math-block')
+  it('renders block math ($$$ ... $$$) as <formula data-block="">', async () => {
+    const result = await compile('$$$\nx^2\n$$$', { plugins: [mathPlugin] })
+    expect(result.html).toContain('<formula data-block="">')
   })
 
   it('does not throw on invalid latex', async () => {

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="generator" content="Quarkdown">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="quarkdown:root-path" content=".">
+    <title>Quarkdown</title>
+    <script src="./script/quarkdown.min.js"></script>
+    <script>const capabilities = window.quarkdownCapabilities</script>
+    <script>window.texMacros = {"\\binomdef": "\\frac{#1!}{#2!(#1 - #2)!}",}</script>
+    <link href="./lib/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="./lib/katex/katex.min.css" rel="stylesheet">
+    <script src="./lib/katex/katex.min.js" defer="true"></script>
+    <script>capabilities.math = true;</script>
+    <link href="./theme/theme.css" rel="stylesheet">
+    <style>
+
+</style>
+    <script>prepare(new PlainDocument());</script>
+<template id="sidebar-template"><nav class="sidebar" role="doc-toc"><ol><li data-target-id="math" data-depth="1"><a href="#math">Math</a></li></ol></nav>
+</template>  </head>
+  <body class="quarkdown quarkdown-plain">
+    <aside class="margin-area" id="margin-area-left"></aside>
+    <main><h1 class="page-break" id="math">Math</h1><h4 id="inline">Inline</h4><p>Let <formula>F(u)</formula> be the <em>Fourier Transform</em> of the function <formula>f(x)</formula>.</p><h4 id="block">Block</h4><formula data-block="">F(u) = \int_{-\infty}^{\infty} f(x) e^{-2 \pi i u x} dx</formula><h4 id="multiline-block">Multiline block</h4><formula data-block="">f(x) = \begin{cases}
+  x^2, & \text{if } x \ge 0 \\
+  -x, & \text{if } x < 0
+\end{cases}</formula><h4 id="numbered-block">Numbered block</h4><formula data-block="" data-location="(1)">E = mc^2</formula><blockquote class="tip"><p>Quarkdown supports TeX macros.</p><formula data-block="">\binom{n}{k} = \binomdef{n}{k}</formula></blockquote></main>
+    <aside class="margin-area" id="margin-area-right"></aside>
+  </body>
+</html>

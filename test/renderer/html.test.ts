@@ -10,7 +10,10 @@ describe('HTML renderer', () => {
 
   it('renders a heading', async () => {
     const { html } = await compileHtml('# My Heading')
-    expect(html).toContain('<h1>')
+    // H1 headings get class="page-break" and id, so the tag has attributes
+    expect(html).toContain('<h1')
+    expect(html).toContain('class="page-break"')
+    expect(html).toContain('id="my-heading"')
     expect(html).toContain('My Heading')
   })
 
